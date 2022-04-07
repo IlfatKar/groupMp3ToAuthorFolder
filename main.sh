@@ -1,8 +1,16 @@
 #!/bin/bash
-#FILE=Alpine\ Universe\ -\ Organika.mp3
-for FILE in ./*.mp3
+#set -x
+path=./
+[ ! -z $1 ] && path=$1
+for FILE in "$path"*.mp3
 do
-  ARTIST=`ffprobe "$FILE" 2>&1 | grep -w 'artist' | cut -d ":" -f 2`
+  FILENAME=`basename "$FILE"`
+  ARTIST=`ffprobe "$path/$FILENAME" 2>&1 | grep -w 'artist' | cut -d ":" -f 2`
   ARTIST=`echo $ARTIST | xargs`
-  [ ! -z "$ARTIST" ] && mkdir -p "$ARTIST" && mv "$FILE" "$ARTIST/$FILE" 
+  if [ ! -z "$ARTIST" ]
+  then
+    mkdir -p "$path/$ARTIST" && mv "$path/$FILENAME" "$path/$ARTIST/$FILENAME" 
+  else
+    mkdir -p "$path/Other" && mv "$path/$FILENAME" "$path/Other/$FILENAME" 
+  fi
 done
